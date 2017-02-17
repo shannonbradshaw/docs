@@ -1,0 +1,23 @@
+==========
+Basic Auth
+==========
+
+.. default-domain:: mongodb
+
+
+Procedure
+---------
+
+.. include:: /includes/steps/enable-basic-authentication.rst
+
+.. seealso::
+   :doc:`/tutorial/manage-users-and-roles`.
+
+.. class:: hidden
+
+   .. toctree::
+      :titlesonly:
+
+      /tutorial/manage-users-and-roles
+      /tutorial/change-own-password-and-custom-data
+
