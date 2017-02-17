@@ -1,0 +1,116 @@
+title: Start MongoDB without authentication enabled.
+stepnum: 1
+level: 4
+ref: start-without-auth
+action:
+  copyable: true
+  language: sh
+  code: |
+    mongod --port 27017 --dbpath /data/db1
+---
+stepnum: 2
+title: Connect to the instance you started from the mongo shell.
+level: 4
+ref: connect
+action:
+  copyable: true
+  language: sh
+  code: |
+    mongo --port 27017 
+post: |
+   Specify additional command line options as appropriate to connect the
+   :program:`mongo` shell to your instance, such as ``--host``.
+---
+stepnum: 3
+title: In the mongo shell, create a user with the ``root`` role.
+level: 4
+ref: create-user-root
+action:
+  copyable: true
+  language: javascript
+  code: |
+    use admin
+    db.createUser(
+      {
+        user: "basicAuthUser",
+        pwd: "abc123", // change this to a real password
+        roles: [ { role: "root", db: "admin" } ]
+      }
+    )
+post: |
+  Disconnect the :program:`mongo` shell.
+---
+title: Re-start the MongoDB instance with authentication enabled.
+level: 4
+stepnum: 4
+ref: restart-with-auth
+action:
+  copyable: true
+  language: sh
+  code: |
+    mongod --auth --port 27017 --dbpath /data/db1
+post: |
+  Clients that connect to this instance must now authenticate
+  themselves as the ``basicAuthUser``.
+---
+title: Connect with the mongo shell as we did before.
+level: 4
+stepnum: 5
+ref: connect-again
+action:
+  copyable: true
+  language: sh
+  code: |
+    mongo --port 27017
+---
+title: In the mongo shell, attempt to show dbs. This will fail.
+level: 4
+stepnum: 6
+ref: not-authorized
+action:
+  copyable: true
+  language: sh
+  code: |
+    show dbs
+post: |
+  Only the ``basicAuthUser`` is authorized to execute commands.
+---
+title: Instead, connect and authenticate as the ``basicAuthUser``.
+level: 4
+stepnum: 7
+ref: auth-as-admin
+action:
+  copyable: true
+  language: sh
+  code: |
+    mongo --port 27017 -u "basicAuthUser" -p "abc123" --authenticationDatabase "admin"
+---
+title: The ``basicAuthUser`` can perform any operation anywhere in this instance.
+level: 4
+stepnum: 8
+ref: perform-crud-operations
+action:
+  - heading: Insert into a collection.
+    copyable: true
+    language: sh
+    code: |
+      db.inventory.insertMany( [
+        { item: "journal", qty: 25, size: { h: 14, w: 21, uom: "cm" }, status: "A" },
+        { item: "notebook", qty: 50, size: { h: 8.5, w: 11, uom: "in" }, status: "A" },
+        { item: "paper", qty: 100, size: { h: 8.5, w: 11, uom: "in" }, status: "D" },
+      ]);
+  - heading: Query a collection.
+    copyable: true
+    language: sh
+    code: |
+      db.inventory.find( { size: { h: 14, w: 21, uom: "cm" } } );
+  - heading: This user can even perform admin functions like dropping a collection.
+    copyable: true
+    language: sh
+    code: |
+      db.inventory.drop();
+
+post: |
+  See the :doc:`root authorization role </reference/built-in-roles/#superuser-roles>` 
+  documentation for details.
+...
