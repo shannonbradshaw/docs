@@ -111,6 +111,6 @@ action:
       db.inventory.drop();
 
 post: |
-  See the :doc:`root authorization role </reference/built-in-roles/#superuser-roles>` 
+  See the :ref:`root authorization role <superuser>` 
   documentation for details.
 ...
